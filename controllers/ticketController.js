@@ -1,7 +1,5 @@
 // backend/controllers/ticketController.js
 const db = require('../data/database');
-const thermalPrinter = require('node-thermal-printer');
-const PDFDocument = require('pdfkit');
 
 const getNumbers = (req, res) => {
     try {
