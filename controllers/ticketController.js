@@ -1,6 +1,6 @@
 // backend/controllers/ticketController.js
 const db = require('../data/database');
-const { PDFDocument } = require('pdf-lib');
+const PDFDocument = require('pdfkit');
 
 const getNumbers = (req, res) => {
     try {
