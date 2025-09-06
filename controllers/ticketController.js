@@ -13,19 +13,20 @@ const getNumbers = (req, res) => {
 
 const createTicket = (req, res) => {
     const { customerName, plays } = req.body;
-
+    let user = req.body.token_user;
+    
     // Validación de entrada
     if (!customerName || !plays || !Array.isArray(plays) || plays.length === 0) {
         return res.status(400).json({ message: 'Datos de la boleta incompletos o incorrectos.' });
     }
     for (const play of plays) {
         if (play.amount < 1000 || play.amount > 10000) {
-            return res.status(400).json({ message: `El valor de la jugada para el número ${play.number} debe estar entre 1,000 y 10,000.` });
+            return res.status(400).json({ message: `El valor de la jugada para el número #${play.number} debe estar entre 1,000 y 10,000.` });
         }
     }
 
     try {
-        const newTicket = db.createTicketTransaction(customerName, plays);
+        const newTicket = db.createTicketTransaction(customerName, plays, user);
         res.status(201).json(newTicket);
     } catch (error) {
         // El error vendrá de la "transacción" si algo falla
