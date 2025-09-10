@@ -8,6 +8,12 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+app.use(cors({
+  origin: 'https://ticket-69rd.vercel.app/', // el origen de tu Angular
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true // si manejas cookies o auth headers
+}));
+
 // 3. Importar las rutas de la API
 const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
