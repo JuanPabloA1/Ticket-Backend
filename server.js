@@ -12,11 +12,13 @@ const path = require('path');
 const app = express();
 
 // 3. Middlewares
-app.use(cors({
-  origin: 'http://localhost:4200', // ajusta según tu frontend
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+// app.use(cors({
+//   origin: 'http://localhost:4200', // ajusta según tu frontend
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   credentials: true
+// }));
+
+app.use(cors({ origin: '*' }));
 
 // 3. Importar las rutas de la API
 const authRoutes = require('./routes/authRoutes');
