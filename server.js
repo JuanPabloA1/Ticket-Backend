@@ -3,15 +3,19 @@
 // 1. Cargar variables de entorno
 require('dotenv').config();
 
-// 2. Importar dependencias
+// 1. Importar dependencias
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 
+// 2. Crear la app
+const app = express();
+
+// 3. Middlewares
 app.use(cors({
-  origin: 'https://ticket-69rd.vercel.app/', // el origen de tu Angular
+  origin: 'http://localhost:4200', // ajusta según tu frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true // si manejas cookies o auth headers
+  credentials: true
 }));
 
 // 3. Importar las rutas de la API
@@ -19,9 +23,6 @@ const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
 const userRoutes = require('./routes/userRoutes');
 const printRoutes = require('./routes/print');
-
-// 4. Crear la aplicación de Express
-const app = express();
 
 // 5. Middlewares globales
 app.use(cors());
