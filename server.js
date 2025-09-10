@@ -11,6 +11,7 @@ const path = require('path');
 // 3. Importar las rutas de la API
 const authRoutes = require('./routes/authRoutes');
 const ticketRoutes = require('./routes/ticketRoutes');
+const userRoutes = require('./routes/userRoutes');
 const printRoutes = require('./routes/print');
 
 // 4. Crear la aplicación de Express
@@ -24,6 +25,7 @@ app.use(express.json());
 // Todas las rutas de la API deben ir ANTES de servir los archivos de Angular
 app.use('/api/auth', authRoutes);
 app.use('/api/print', printRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api', ticketRoutes);
 
 // 7. Servir la aplicación de Angular (Frontend)
