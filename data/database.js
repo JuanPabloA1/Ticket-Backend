@@ -1,4 +1,5 @@
 // backend/data/database.js
+const { v4: uuidv4 } = require("uuid"); // ✅ asegúrate de importar uuid
 
 // Este objeto simula nuestra base de datos.
 const db = {
@@ -42,6 +43,7 @@ module.exports = {
       (u) => u.username === username && u.password === password
     );
   },
+
   getAllNumbers: () => {
     return db.numberAvailability;
   },
@@ -54,13 +56,11 @@ module.exports = {
 
   // Crear un nuevo usuario
   createUser: (username, password, role, name) => {
-    // Validamos que no exista un usuario con el mismo username
     const existingUser = db.users.find((u) => u.username === username);
     if (existingUser) {
       throw new Error(`El usuario "${username}" ya existe.`);
     }
 
-    // Creamos el nuevo usuario
     const newUser = {
       id: nextUserId++,
       username,
@@ -71,36 +71,37 @@ module.exports = {
 
     db.users.push(newUser);
     return newUser;
-  }, // Esta función simula una transacción para crear una boleta.
+  },
 
-  createTicketTransaction: (customerName, plays, user) => {
-    // Agregamos 'user' aquí
-    // 1. Validar cada jugada antes de hacer cambios
+  // Crear un nuevo ticket con transacción
+  createTicketTransaction: (customerName, customerPhone, plays, user) => {
+    // 1. Validar jugadas
     for (const play of plays) {
       const numberState = db.numberAvailability.find(
         (n) => n.number === play.number
       );
       if (!numberState || play.amount > numberState.availableAmount) {
-        // Si una jugada falla, revertimos todo y lanzamos un error.
         throw new Error(
-          `No hay monto suficiente para el número ${play.number}. Disponible: ${numberState.availableAmount}`
+          `No hay monto suficiente para el número ${play.number}. Disponible: ${numberState?.availableAmount || 0}`
         );
       }
-    } // 2. Si todas las validaciones pasan, aplicamos los cambios.
+    }
 
+    // 2. Restar montos
     for (const play of plays) {
       const numberState = db.numberAvailability.find(
         (n) => n.number === play.number
       );
       numberState.availableAmount -= play.amount;
-    } // 3. Creamos y guardamos la boleta, ¡incluyendo los datos del usuario!
+    }
 
+    // 3. Crear boleta
     const newTicket = {
-      id: `BOLETA-${nextTicketId++}`,
+      id: `BOLETA-${uuidv4()}`,
       customerName,
+      customerPhone, // ✅ nuevo campo para almacenar el celular del cliente
       plays,
       user: {
-        // Guardamos la información relevante del usuario que realizó la venta
         id: user.id,
         username: user.username,
         name: user.name,
@@ -108,7 +109,8 @@ module.exports = {
       },
       createdAt: new Date().toISOString(),
     };
+
     db.tickets.push(newTicket);
-    return newTicket; // Devolvemos la boleta creada.
+    return newTicket;
   },
 };

@@ -1,6 +1,7 @@
 // backend/controllers/ticketController.js
 const db = require('../data/database');
 const PDFDocument = require('pdfkit');
+const { v4: uuidv4 } = require('uuid');
 
 const getNumbers = (req, res) => {
     try {
@@ -55,13 +56,11 @@ const generateTicketPDF = (req, res) => {
         return res.status(400).json({ message: 'Datos incompletos para generar el PDF.' });
     }
 
-    // --- CORRECCIÓN APLICADA AQUÍ ---
-    // Convertir 48mm a puntos (1 pulgada = 72 puntos, 1 pulgada = 25.4mm)
-    const widthInPoints = (48 / 25.4) * 72; // Aproximadamente 136 puntos
+    const widthInPoints = (48 / 25.4) * 72;
 
     const doc = new PDFDocument({
-        size: [widthInPoints, 842], // Ancho de 48mm, altura flexible
-        margins: { top: 15, bottom: 15, left: 8, right: 8 } // Márgenes ajustados
+        size: [widthInPoints, 842],
+        margins: { top: 15, bottom: 15, left: 8, right: 8 }
     });
 
     res.setHeader('Content-Disposition', 'attachment; filename=boleta.pdf');
@@ -69,18 +68,21 @@ const generateTicketPDF = (req, res) => {
 
     doc.pipe(res);
 
-    // --- Contenido del PDF reajustado para el nuevo ancho ---
+    // 🚀 Aquí generamos el ID único
+    const ticketId = uuidv4().slice(0, 8); // 8 caracteres para hacerlo corto
 
     // Encabezado
-    doc.font('Helvetica-Bold').fontSize(10).text('TU RIFA', { align: 'center' });
-    doc.fontSize(7).text('Recibo de Venta', { align: 'center' });
+    doc.font('Helvetica-Bold').fontSize(10).text('BONO', { align: 'center' });
+    doc.fontSize(7).text('Ticket', { align: 'center' });
     doc.moveDown(0.5);
+
     const separator = '-----------------------------';
     doc.text(separator, { align: 'center' });
     doc.moveDown();
 
-    // Información del Cliente y Fecha
+    // Info Cliente
     doc.font('Helvetica').fontSize(7);
+    doc.text(`ID: ${ticketId}`);
     doc.text(`Cliente: ${customerName || 'N/A'}`);
     doc.text(`Fecha: ${new Date().toLocaleString('es-CO')}`);
     doc.moveDown();
@@ -88,7 +90,9 @@ const generateTicketPDF = (req, res) => {
     // Tabla de Jugadas
     doc.font('Helvetica-Bold');
     const tableTop = doc.y;
-    doc.text('Número', 10, tableTop);
+    doc.text(`ID: ${ticketId}`);
+    
+    doc.text('#', 10, tableTop);
     doc.text('Valor', widthInPoints - 50, tableTop, { align: 'right' });
     doc.y += 10;
     doc.text(separator, { align: 'center' });
@@ -114,8 +118,8 @@ const generateTicketPDF = (req, res) => {
 
     // Pie de página
     doc.font('Helvetica').fontSize(7);
-    doc.text('¡Gracias por su compra!', { align: 'center' });
-    doc.text('Conserve este tiquete.', { align: 'center' });
+    doc.text('El acierto otorga un beneficio proporcional al 65% de la suma jugada en electrodomesticos. Guarde este tiquete para su respectiva validación.', { align: 'center' });
+    // doc.text('Conserve este tiquete.', { align: 'center' });
 
     doc.end();
 };
