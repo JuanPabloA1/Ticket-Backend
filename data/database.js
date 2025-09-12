@@ -99,7 +99,7 @@ module.exports = {
     const newTicket = {
       id: `BOLETA-${uuidv4()}`,
       customerName,
-      customerPhone, // ✅ nuevo campo para almacenar el celular del cliente
+      customerPhone: customerPhone || null, // ✅ contacto opcional
       plays,
       user: {
         id: user.id,
